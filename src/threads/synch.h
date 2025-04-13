@@ -47,5 +47,5 @@ void cond_broadcast (struct condition *, struct lock *);
    optimization barrier.  See "Optimization Barriers" in the
    reference guide for more information.*/
 #define barrier() asm volatile ("" : : : "memory")
-
+bool cmp_sema_priority(const struct list_elem *l, const struct list_elem *r, void *aux);
 #endif /* threads/synch.h */

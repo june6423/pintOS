@@ -522,3 +522,14 @@ list_min (struct list *list, list_less_func *less, void *aux)
     }
   return min;
 }
+
+bool
+list_contains(struct list *lst, struct list_elem *elem) {
+    struct list_elem *e;
+
+    for (e = list_begin(lst); e != list_end(lst); e = list_next(e)) {
+        if (e == elem)
+            return true;
+    }
+    return false;
+}

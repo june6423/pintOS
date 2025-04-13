@@ -23,6 +23,10 @@ typedef int tid_t;
 #define PRI_MIN 0                       /* Lowest priority. */
 #define PRI_DEFAULT 31                  /* Default priority. */
 #define PRI_MAX 63                      /* Highest priority. */
+#define NICE_DEFAULT 0
+#define RECENT_CPU_DEFAULT 0
+#define LOAD_AVG_DEFAULT 0
+
 
 /* A kernel thread or user process.
 
@@ -100,7 +104,18 @@ struct thread
 
     /* Owned by thread.c. */
     unsigned magic;                     /* Detects stack overflow. */
-    int64_t wakeup_tick;
+    int64_t wakeup;
+    
+
+    int orig_priority;
+
+    struct lock *wait_on_lock;
+    struct list donor_list; /* Thank you for your Donation! */
+    struct list_elem received_donation_list; /* This thread gives donations to this list of threads */
+
+    int nice;
+    int recent_cpu;
+
   };
 
 /* If false (default), use round-robin scheduler.
@@ -143,5 +158,20 @@ void thread_sleep(int64_t ticks);
 void thread_awake(int64_t ticks);
 int64_t get_min_wakeup_tick(void);
 void update_min_wakeup_tick(int64_t ticks);
+
+void thread_calibrate_priority(void);
+bool cmp_thread_priority(const struct list_elem *l, const struct list_elem *r, void *aux);
+bool cmp_thread_donate_priority(const struct list_elem *l, const struct list_elem *r, void *aux);
+void donate_priority(void);
+void refresh_lock(struct lock *lock);
+void refresh_priority(void);
+
+
+void mlfqs_calculate_priority (struct thread *t);
+void mlfqs_calculate_recent_cpu (struct thread *t);
+void mlfqs_calculate_load_avg (void);
+void mlfqs_recent_cpu_plus_plus (void);
+void mlfqs_recalculate_recent_cpu (void);
+void mlfqs_recalculate_priority (void);
 
 #endif /* threads/thread.h */
